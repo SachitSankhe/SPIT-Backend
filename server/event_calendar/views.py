@@ -93,7 +93,7 @@ def add_event(request):
 
     try:
         event = Event(title=title, description=desc,
-                      room=room, committee=committee)
+                      room=room, committee=committee, status=0, registrations=0)
         event.save()
         roomCalender = RoomCalendar(
             room=room, date=date, slot=slot, event=event)
@@ -119,3 +119,19 @@ def get_calender(request):
         "date": item.date, 
         "slot": item.slot.name, 
     } for item in calendar])
+
+@api_view(['GET'])
+def get_events(request):
+    val = request.GET.get('value')
+
+    events = Event.objects.filter(status=val).all()
+
+    return Response([{
+        'title': event.title,
+        'description': event.description,
+        'room': event.room.name,
+        'committee': event.committee.name,
+        'registrations': event.registrations
+    } for event in events])
+
+
