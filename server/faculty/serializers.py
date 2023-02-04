@@ -8,8 +8,9 @@ class FacultySerializer(serializers.ModelSerializer):
         model = Faculty
         fields = [
             'id',
-            'username',
+            'name',
             'email',
+            'password',
         ]
 
 

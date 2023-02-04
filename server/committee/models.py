@@ -2,7 +2,7 @@ import datetime
 import uuid
 from django.db import models
 from faculty.models import Faculty
-import jwt 
+import jwt
 from django.conf import settings
 # Create your models here.
 
@@ -20,7 +20,7 @@ class Committee(models.Model):
     def getAccessToken(self):
         payload = {
             'id': self.id,
-            'exp': datetime.utcnow() + datetime.timedelta(minutes=30),
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30),
             'access': settings.COMMITTEE_ACCESS
         }
         # create a environment variable for secret
@@ -31,21 +31,21 @@ class Committee(models.Model):
     def getRefreshToken(self):
         payload = {
             'id': self.id,
-            'exp': datetime.utcnow() + datetime.timedelta(days=7),
+            'exp': datetime.datetime.utcnow()+ datetime.timedelta(days=7),
             'access': settings.COMMITTEE_ACCESS
         }
-        jwt_token = jwt.encode(
+        jwt_token=jwt.encode(
             payload, settings.SECRET_TOKEN_KEY, algorithm=settings.ALGORITHM)
-        self.refreshToken = jwt_token
+        self.refreshToken=jwt_token
         self.save()
         return jwt_token
 
     def getPasswordRefreshToken(self):
-        payload = {
+        payload={
             'id': self.id,
-            'exp': datetime.utcnow() + datetime.timedelta(minutes=15)
+            'exp': datetime.datetime.utcnow()+ datetime.timedelta(minutes=15)
         }
-        reset_token = jwt.encode(
+        reset_token=jwt.encode(
             payload, self.password, algorithm=settings.ALGORITHM)
         # self.
         return reset_token
