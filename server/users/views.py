@@ -10,7 +10,7 @@ from rest_framework.exceptions import AuthenticationFailed, NotFound
 from rest_framework.response import Response
 from django.http import HttpRequest
 
-from ..event_calendar.decorators import login_required
+from .decorators import login_required
 from .models import Tokenstable, User
 from .serializers import AuthUserSerializer, TokenSerializer, UserSerializer
 

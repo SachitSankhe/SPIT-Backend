@@ -5,3 +5,4 @@ import event_calendar.models as em
 admin.site.register(em.RoomCalendar)
 admin.site.register(em.Slot)
 admin.site.register(em.Holiday)
+admin.site.register(em.Room)

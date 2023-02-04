@@ -46,11 +46,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'users',
-    'event_calendar',
     'committee',
     'faculty',
     'student',
     'admin_user',
+    'event_calendar',
     'rest_framework',
 ]
 
@@ -149,3 +149,8 @@ STATIC_URL = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
+
+ADMIN_ACCESS=env('ADMIN_ACCESS')
+FACULTY_ACCESS=env('FACULTY_ACCESS')
+COMMITTEE_ACCESS=env('COMMITTEE_ACCESS')
+STUDENT_ACCESS=env('STUDENT_ACCESS')

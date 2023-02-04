@@ -1,6 +1,5 @@
 import uuid
 from django.db import models
-import administration.models as am
 from faculty.models import Department
 from committee.models import Committee
 
@@ -17,24 +16,6 @@ class Slot(models.Model):
         return "{} {} - {}".format(self.name,self.start_time,self.end_time)
 
 
-class RoomCalendar(models.Model):
-    id = models.UUIDField(default=uuid.uuid4, primary_key=True,editable=False)
-    room = models.ForeignKey(am.Room,on_delete=models.CASCADE)
-    date = models.DateField(blank=False)
-    slot = models.ForeignKey(Slot,on_delete=models.CASCADE)
-    event = models.ForeignKey(am.Event,on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "{} {} {} {}".format(self.room,self.date,self.slot,self.event)
-
-class Holiday(models.Model):
-    id = models.UUIDField(default=uuid.uuid4, primary_key=True,editable=False)
-    date = models.DateField(blank=False)
-
-    def __str__(self):
-        return str(self.date)
-    
-
 
 class Room(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -44,6 +25,7 @@ class Room(models.Model):
 
     def __str__(self):
         return self.name
+    
 
 
 class Event(models.Model):
@@ -55,3 +37,28 @@ class Event(models.Model):
 
     def __str__(self):
         return self.title
+class RoomCalendar(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True,editable=False)
+    room = models.ForeignKey(Room,on_delete=models.CASCADE)
+    date = models.DateField(blank=False)
+    slot = models.ForeignKey(Slot,on_delete=models.CASCADE)
+    event = models.ForeignKey(Event,on_delete=models.CASCADE)
+
+    # def __str__(self):
+    #     return "{} {} {} {}".format(self.room,self.date,self.slot,self.event)
+    
+
+
+
+class Holiday(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True,editable=False)
+    date = models.DateField(blank=False)
+
+    def __str__(self):
+        return str(self.date)
+    
+
+
+
+
+
