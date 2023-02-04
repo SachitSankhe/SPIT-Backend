@@ -15,8 +15,8 @@ class Faculty(models.Model):
     def getAccessToken(self):
         payload = {
             'id': self.id,
-            'exp': datetime.utcnow() + datetime.timedelta(minutes=30),
-            'access': settings.COMMITTEE_ACCESS
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30),
+            'access': settings.FACULTY_ACCESS
         }
         # create a environment variable for secret
         jwt_token = jwt.encode(
@@ -26,7 +26,7 @@ class Faculty(models.Model):
     def getRefreshToken(self):
         payload = {
             'id': self.id,
-            'exp': datetime.utcnow() + datetime.timedelta(days=7),
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=7),
             'access': settings.FACULTY_ACCESS
         }
         jwt_token = jwt.encode(
@@ -38,7 +38,7 @@ class Faculty(models.Model):
     def getPasswordRefreshToken(self):
         payload = {
             'id': self.id,
-            'exp': datetime.utcnow() + datetime.timedelta(minutes=15)
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=15)
         }
         reset_token = jwt.encode(
             payload, self.password, algorithm=settings.ALGORITHM)

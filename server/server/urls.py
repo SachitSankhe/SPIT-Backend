@@ -19,7 +19,9 @@ from .views import login
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/auth/", include('users.urls')),
-    # path("api/admin/", include('admin_user.urls')),
+    # path("api/auth/", include('users.urls')),
+    path("committee/", include('committee.urls')),
+    path("faculty/", include('faculty.urls')),
+    path("student/", include('student.urls')),
     path('login/', login, name="login")
 ]
