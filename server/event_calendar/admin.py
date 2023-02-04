@@ -1,6 +1,7 @@
 from django.contrib import admin
-from event_calendar.models import RoomCalendar, Slot
+import event_calendar.models as em
 
 # Register your models here.
-admin.site.register(RoomCalendar)
-admin.site.register(Slot)
+admin.site.register(em.RoomCalendar)
+admin.site.register(em.Slot)
+admin.site.register(em.Holiday)
