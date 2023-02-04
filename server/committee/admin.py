@@ -3,3 +3,4 @@ from .models import Committee
 
 admin.site.register(Committee)
 # Register your models here.
+admin.site.register(Committee)
