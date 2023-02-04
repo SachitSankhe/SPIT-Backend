@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import AuthenticationFailed, NotFound
 from .models import Faculty
-from .serializers import AuthCommitteeSerializer, CommitteeSerializer
+from .serializers import AuthCommitteeSerializer,CommitteeSerializer
 from rest_framework.response import Response
 from django.contrib.auth.hashers import check_password, make_password
 from .models import Committee
@@ -15,11 +15,10 @@ def login(request):
     password = request.data.get('password')
     # print(username, password)
 
-    user = Committee.objects.filter(email=email).first()
+    user = Faculty.objects.filter(email=email).first()
 
     try:
         instance = user
-        user.id = str(user.id)
         user = AuthCommitteeSerializer(user).data
     except Exception as e:
         return Response({
@@ -52,24 +51,27 @@ def login(request):
     return response
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET','POST'])
 def register(request):
-    if request.method == 'POST':
+    if request.method=='POST':
         data = {
-            'name': request.POST.get('name'),
-            'email': request.POST.get('email'),
-            'desc': request.POST.get('desc'),
+            'name' : request.POST.get('name'),
+            'email' : request.POST.get('email'),
+            'desc' : request.POST.get('desc'),
             # Get id from the frontend,
-            'faculty': request.POST.get('faculty'),
-            'password': request.POST.get('password'),
+            'faculty' : request.POST.get('faculty'),
+            'password' : request.POST.get('password'),
         }
+        
 
         committee_inst = CommitteeSerializer(data=data)
 
         if committee_inst.is_valid():
+            # print("pass")
+            # print("username - " + username, "pass - "+password, "email - " + email)
+            # IntegrityError
             try:
-                instance = Committee(name=data['name'], email=data['email'], password=make_password(
-                    data['password']), desc=data['desc'], faculty=Faculty.objects.get(id=data['faculty']))
+                instance = Committee(name=data['name'],email=data['email'],password=make_password(data['password']),desc = data['desc'],faculty=Faculty.objects.get(id=data['faculty']))
                 # instance.password = make_password(data['password'])
                 instance.save()
             except IntegrityError as e:
@@ -82,7 +84,6 @@ def register(request):
                 }, status=500)
 
             try:
-                instance.id = str(instance.id)
                 user = CommitteeSerializer(instance).data
                 access_token = instance.getAccessToken()
                 refresh_token = instance.getRefreshToken()
@@ -97,14 +98,13 @@ def register(request):
                 'user': user,
                 'access_token': access_token
             })
-            response.set_cookie('jwt_refresh_token',
-                                refresh_token, httponly=True)
+            response.set_cookie('jwt_refresh_token', refresh_token, httponly=True)
             print(response)
             return response
-
-    elif request.method == 'GET':
+        
+        elif request.method=='GET':
             faculty = Faculty.objects.all()
-            print(faculty)
+
             list = []
             for fac in faculty:
                 temp = {
@@ -115,4 +115,4 @@ def register(request):
 
             return Response({
                 'faculty_list': list,
-            }, status=200)
+            },status=200)

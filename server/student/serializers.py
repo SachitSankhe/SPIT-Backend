@@ -1,23 +1,23 @@
 from rest_framework import serializers
 
-from .models import Committee
+from .models import Student
 
 
-class CommitteeSerializer(serializers.ModelSerializer):
+class StudentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Committee
+        model = Student
         fields = [
+            'id',
             'name',
+            'branch',
             'email',
-            'desc',
-            'faculty',
             'password',
         ]
 
 
-class AuthCommitteeSerializer(serializers.ModelSerializer):
+class AuthStudentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Committee
+        model = Student
         fields = [
             'id',
             'email',
