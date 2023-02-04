@@ -5,7 +5,7 @@ from .views import (login, logout, private, refresh, register, reset_password,
                     resetpasssord, test)
 
 urlpatterns = [
-    path('login/', login),
+    path('login/'),
     path('register/', register),
     path('private/', private),
     path('refresh/', refresh),
