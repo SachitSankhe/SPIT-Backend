@@ -23,5 +23,6 @@ urlpatterns = [
     path("committee/", include('committee.urls')),
     path("faculty/", include('faculty.urls')),
     path("student/", include('student.urls')),
-    path('login/', login, name="login")
+    path('login/', login, name="login"),
+    path('event/',include('event_calendar.urls'))
 ]
