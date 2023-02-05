@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from .views import login
+from .views import login,refresh
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -23,5 +23,7 @@ urlpatterns = [
     path("committee/", include('committee.urls')),
     path("faculty/", include('faculty.urls')),
     path("student/", include('student.urls')),
-    path('login/', login, name="login")
+    path('login/', login, name="login"),
+    path('refresh/', refresh, name="refresh")
+
 ]

@@ -7,12 +7,14 @@ from rest_framework.response import Response
 from django.contrib.auth.hashers import check_password, make_password
 from .models import Committee
 from django.db.utils import IntegrityError
+from django.conf import settings
+import jwt
 
 
 @api_view(['POST'])
 def login(request):
-    email = request.data.get('email')
-    password = request.data.get('password')
+    email = request.POST.get('email')
+    password = request.POST.get('password')
     # print(username, password)
 
     user = Committee.objects.filter(email=email).first()
@@ -103,16 +105,55 @@ def register(request):
             return response
 
     elif request.method == 'GET':
-            faculty = Faculty.objects.all()
-            print(faculty)
-            list = []
-            for fac in faculty:
-                temp = {
-                    'name': fac.name,
-                    'id': fac.id,
-                }
-                list.append(temp)
+        faculty = Faculty.objects.all()
+        print(faculty)
+        list = []
+        for fac in faculty:
+            temp = {
+                'name': fac.name,
+                'id': fac.id,
+            }
+            list.append(temp)
 
-            return Response({
-                'faculty_list': list,
-            }, status=200)
+        return Response({
+            'faculty_list': list,
+        }, status=200)
+
+
+@api_view(['GET'])
+def refresh(request):
+    refresh_token = request.COOKIES.get('jwt_refresh_token')
+    print(refresh_token)
+
+    if refresh_token is None:
+        return Response({
+            'detail': "No token present."
+        }, status=406)
+    user = Committee.objects.filter(refreshToken=refresh_token).first()
+
+    if user is None:
+        return NotFound(detail="User not found", code=404)
+
+    try:
+        payload = jwt.decode(refresh_token, 'secret',
+                             algorithms=[settings.ALGORITHM])
+    except jwt.ExpiredSignatureError:
+        return Response({
+            'detail': "Token expired. Try again"
+        }, status=403)
+    except:
+        return Response({
+            'detail': "Some error occured."
+        }, status=500)
+
+    seralized_user = CommitteeSerializer(user).data
+
+    if seralized_user.get('id') != payload.get('id'):
+        return Response(status=403)
+
+    access_token = user.getAccessToken()
+
+    return Response({
+        'access_token': access_token,
+        'user': seralized_user,
+    })

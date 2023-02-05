@@ -28,19 +28,19 @@ def login(request):
             'password': password,
             'access': settings.FACULTY_ACCESS
         }
+
         resp = requests.post(
             "http://" + HttpRequest.get_host(request) + "/faculty/login/", data=data)
         print(resp)
         return Response({
-            'details' : resp.json(),
+            'details': resp.json(),
             # 'access_token' : resp.json().access_token
-            }
+        }
         )
-  
+
     elif Committee.objects.filter(email=email).exists():
         print("Inside Committee.")
         print(Committee.objects.get(email=email))
-
 
         data = {
             'email': email,
@@ -51,12 +51,11 @@ def login(request):
             "http://" + HttpRequest.get_host(request) + "/committee/login/", data=data)
         print(resp)
         return Response({
-            'details' : resp.json(),
+            'details': resp.json(),
             # 'access_token' : resp.json().access_token
-            }
+        }
         )
 
-    
     elif Student.objects.filter(email=email).exists():
         print("Inside Student.")
         user = Student.objects.get(email=email)
@@ -70,14 +69,76 @@ def login(request):
         resp = requests.post(
             "http://" + HttpRequest.get_host(request) + "/student/login/", data=data)
         print(resp.json())
-        
+
         return Response({
-            'details' : resp.json(),
+            'details': resp.json(),
             # 'access_token' : resp.json().access_token
-            }
+        }
         )
     else:
         return Response({
             'details': "User does not exist."
         })
 
+
+@api_view(['GET'])
+def refresh(request):
+
+    refresh_token = request.COOKIES.get('jwt_refresh_token')
+
+    if Faculty.objects.filter(refreshToken=refresh_token).exists():
+
+        resp = requests.get(
+            "http://" + HttpRequest.get_host(request) + "/faculty/refresh/")
+        # print(resp)
+        # return Response({
+        #     'details': resp.json(),
+        #     # 'access_token' : resp.json().access_token
+        #     }
+        # )
+        resp = requests.get(
+            "http://" + HttpRequest.get_host(request) + "/faculty/refresh/")
+        resp['access'] = settings.FACULTY_ACCESS
+        return resp
+
+    elif Committee.objects.filter(refreshToken=refresh_token).exists():
+        # print("Inside Committee.")
+        # print(Committee.objects.get(email=email))
+
+        # data = {
+        #     'email': email,
+        #     'password': password,
+        #     'access': settings.COMMITTEE_ACCESS
+        # }
+        # resp = requests.post(
+        #     "http://" + HttpRequest.get_host(request) + "/committee/login/", data=data)
+        # print(resp)
+        # return Response({
+        #     'details': resp.json(),
+        #     # 'access_token' : resp.json().access_token
+        # }
+        # )
+        resp = requests.get(
+            "http://" + HttpRequest.get_host(request) + "/committee/refresh/")
+
+        resp['access'] = settings.COMMITTEE_ACCESS
+        return resp
+
+    elif Student.objects.filter(refreshToken=refresh_token).exists():
+
+        resp = requests.get(
+            "http://" + HttpRequest.get_host(request) + "/student/refresh/")
+
+        resp['access'] = settings.STUDENT_ACCESS
+        return resp
+        # print(resp.json())
+
+        # return Response({
+        #     'details': resp.json(),
+        #     # 'access_token' : resp.json().access_token
+        # }
+        # )
+    else:
+        return Response({
+            'details': "User does not exist."
+        })

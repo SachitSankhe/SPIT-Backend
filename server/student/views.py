@@ -7,6 +7,8 @@ from rest_framework.response import Response
 from django.contrib.auth.hashers import check_password, make_password
 # from .models import Committee
 from django.db.utils import IntegrityError
+import jwt
+from django.conf import settings
 
 
 @api_view(['POST'])
@@ -103,3 +105,39 @@ def register(request):
             return Response({
                 'details': committee_inst.errors
             })
+
+@api_view(['GET'])
+def refresh(request):
+    refresh_token = request.COOKIES.get('jwt_refresh_token')
+    if refresh_token is None:
+        return Response({
+            'detail': "No token present."
+        }, status=406)
+    user = Student.objects.filter(refreshToken=refresh_token).first()
+
+    if user is None:
+        return NotFound(detail="User not found", code=404)
+
+    try:
+        payload = jwt.decode(refresh_token, 'secret',
+                             algorithms=[settings.ALGORITHM])
+    except jwt.ExpiredSignatureError:
+        return Response({
+            'detail': "Token expired. Try again"
+        }, status=403)
+    except:
+        return Response({
+            'detail': "Some error occured."
+        }, status=500)
+
+    seralized_user = StudentSerializer(user).data
+
+    if seralized_user.get('id') != payload.get('id'):
+        return Response(status=403)
+
+    access_token = user.getAccessToken()
+
+    return Response({
+        'access_token': access_token,
+        'user': seralized_user
+    })
