@@ -46,6 +46,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     'users',
+    'committee',
+    'faculty',
+    'student',
+    'admin_user',
+    'event_calendar',
     'rest_framework',
 ]
 
@@ -98,8 +103,8 @@ DATABASES = {
         'NAME': env('DB_NAME'),
         'USER': env('DB_USER'),
         'PASSWORD': env('DB_PASSWORD'),
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT'),
     }
 }
 
@@ -154,4 +159,7 @@ STATIC_URL = "static/"
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+ADMIN_ACCESS=env('ADMIN_ACCESS')
+FACULTY_ACCESS=env('FACULTY_ACCESS')
+COMMITTEE_ACCESS=env('COMMITTEE_ACCESS')
+STUDENT_ACCESS=env('STUDENT_ACCESS')
