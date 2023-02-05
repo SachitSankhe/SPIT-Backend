@@ -61,6 +61,7 @@ def login(request):
             'detail': "Error in generating tokens -> Specific error is " + str(e)
         }, status=500)
 
+    user = UserSerializer(instance).data
     response = Response({
         'user': user,
         'access_token': access_token
@@ -132,18 +133,21 @@ def private(request):
 @api_view(['GET'])
 def refresh(request):
     refresh_token = request.COOKIES.get('jwt_refresh_token')
+    print(refresh_token)
     if refresh_token is None:
         return Response({
             'detail': "No token present."
         }, status=406)
     user = User.objects.filter(refreshToken=refresh_token).first()
+    print(UserSerializer(user).data)
 
     if user is None:
         return NotFound(detail="User not found", code=404)
 
     try:
-        payload = jwt.decode(refresh_token, 'secret',
+        payload = jwt.decode(refresh_token, settings.SECRET_TOKEN_KEY,
                              algorithms=[settings.ALGORITHM])
+        print(payload)
     except jwt.ExpiredSignatureError:
         return Response({
             'detail': "Token expired. Try again"
@@ -280,14 +284,15 @@ def resetpasssord(request):
         msg_html = render_to_string('users/email.html', {'context': context})
 
         try:
-            tokentableinstance = Tokenstable.objects.filter(id=user.id).exists()
+            tokentableinstance = Tokenstable.objects.filter(
+                id=user.id).exists()
             if not tokentableinstance:
                 try:
                     send_mail("Password reset request",
-                            msg_plain,
-                            settings.EMAIL_HOST_USER,
-                            recipient_list=[serialized_user.get('email')],
-                            html_message=msg_html)
+                              msg_plain,
+                              settings.EMAIL_HOST_USER,
+                              recipient_list=[serialized_user.get('email')],
+                              html_message=msg_html)
                 except Exception as e:
                     # Error of the email service
                     return Response({
@@ -318,7 +323,9 @@ def resetpasssord(request):
 @ api_view(["GET"])
 def test(request, testNo):
     print(testNo)
-    return Response(status=400)
+    response = Response(status=200)
+    response.set_cookie('TestNo', testNo)
+    return response
 
 # seperate this view
 # expected route - /api/logout not /api/auth/logout

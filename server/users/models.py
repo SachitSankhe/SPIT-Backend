@@ -16,7 +16,7 @@ class User(models.Model):
     def getAccessToken(self):
         payload = {
             'id': self.id,
-            'exp': datetime.utcnow() + timedelta(minutes=30)
+            'exp': datetime.utcnow() + timedelta(minutes=15)
         }
         # create a environment variable for secret
         jwt_token = jwt.encode(
