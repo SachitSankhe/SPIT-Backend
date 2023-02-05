@@ -1,6 +1,8 @@
 import jwt
 from rest_framework.response import Response
-from users.models import User
+from faculty.models import Faculty
+from committee.models import Committee
+from student.models import Student
 from functools import wraps
 from django.conf import settings
 
@@ -25,10 +27,26 @@ def login_required(view_function):
         try:
             jwt_token = jwt_token.split()[1]
             print(jwt_token)
-            user_id = jwt.decode(
-                jwt_token, settings.SECRET_TOKEN_KEY, algorithms=[settings.ALGORITHM])['id']
-            request.user = User.objects.get(pk=user_id)
-            print(request.user)
+            user_obj = jwt.decode(
+                jwt_token, settings.SECRET_TOKEN_KEY, algorithms=[settings.ALGORITHM])
+            print(user_obj)
+            user_id = user_obj['id']
+            user_access = int(user_obj['access'])
+            print(user_access)
+            var = settings.FACULTY_ACCESS
+            print(var)
+            if user_access == int(settings.FACULTY_ACCESS):
+                request.user.id = Faculty.objects.get(pk=user_id).id
+                request.user.access = user_access
+            elif user_access == int(settings.COMMITTEE_ACCESS):
+                print("Test")
+                request.user.id = Committee.objects.get(pk=user_id).id
+                request.user.access = user_access
+            elif user_access == int(settings.STUDENT_ACCESS):
+                request.user.id = Student.objects.get(pk=user_id).id
+                request.user.access = user_access
+
+            print(request.user.id)
         except jwt.ExpiredSignatureError:
             return Response({
                 'detail': "Access token expired."
